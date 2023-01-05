@@ -97,5 +97,60 @@
   <ItemGroup>
     <Resource Include="Background.jpg" />
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="CardImages\Harten10.png" />
+    <Resource Include="CardImages\Harten2.png" />
+    <Resource Include="CardImages\Harten3.png" />
+    <Resource Include="CardImages\Harten4.png" />
+    <Resource Include="CardImages\Harten5.png" />
+    <Resource Include="CardImages\Harten6.png" />
+    <Resource Include="CardImages\Harten7.png" />
+    <Resource Include="CardImages\Harten8.png" />
+    <Resource Include="CardImages\Harten9.png" />
+    <Resource Include="CardImages\HartenAas.png" />
+    <Resource Include="CardImages\HartenBoer.png" />
+    <Resource Include="CardImages\HartenDame.png" />
+    <Resource Include="CardImages\HartenKoning.png" />
+    <Resource Include="CardImages\Klaveren10.png" />
+    <Resource Include="CardImages\Klaveren2.png" />
+    <Resource Include="CardImages\Klaveren3.png" />
+    <Resource Include="CardImages\Klaveren4.png" />
+    <Resource Include="CardImages\Klaveren5.png" />
+    <Resource Include="CardImages\Klaveren6.png" />
+    <Resource Include="CardImages\Klaveren7.png" />
+    <Resource Include="CardImages\Klaveren8.png" />
+    <Resource Include="CardImages\Klaveren9.png" />
+    <Resource Include="CardImages\KlaverenAas.png" />
+    <Resource Include="CardImages\KlaverenBoer.png" />
+    <Resource Include="CardImages\KlaverenDame.png" />
+    <Resource Include="CardImages\KlaverenKoning.png" />
+    <Resource Include="CardImages\Ruiten10.png" />
+    <Resource Include="CardImages\Ruiten2.png" />
+    <Resource Include="CardImages\Ruiten3.png" />
+    <Resource Include="CardImages\Ruiten4.png" />
+    <Resource Include="CardImages\Ruiten5.png" />
+    <Resource Include="CardImages\Ruiten6.png" />
+    <Resource Include="CardImages\Ruiten7.png" />
+    <Resource Include="CardImages\Ruiten8.png" />
+    <Resource Include="CardImages\Ruiten9.png" />
+    <Resource Include="CardImages\RuitenAas.png" />
+    <Resource Include="CardImages\RuitenBoer.png" />
+    <Resource Include="CardImages\RuitenDame.png" />
+    <Resource Include="CardImages\RuitenKoning.png" />
+    <Resource Include="CardImages\Schoppen10.png" />
+    <Resource Include="CardImages\Schoppen2.png" />
+    <Resource Include="CardImages\Schoppen3.png" />
+    <Resource Include="CardImages\Schoppen4.png" />
+    <Resource Include="CardImages\Schoppen5.png" />
+    <Resource Include="CardImages\Schoppen6.png" />
+    <Resource Include="CardImages\Schoppen7.png" />
+    <Resource Include="CardImages\Schoppen8.png" />
+    <Resource Include="CardImages\Schoppen9.png" />
+    <Resource Include="CardImages\SchoppenAas.png" />
+    <Resource Include="CardImages\SchoppenBoer.png" />
+    <Resource Include="CardImages\SchoppenDame.png" />
+    <Resource Include="CardImages\SchoppenKoning.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
