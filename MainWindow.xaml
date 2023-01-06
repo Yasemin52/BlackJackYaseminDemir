@@ -5,119 +5,219 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BlackJack"
         mc:Ignorable="d"
-        Title="BLACKJACK" Height="1500" Width="1400" Loaded="Window_Loaded">
+        Title="BLACKJACK" Height="1300" Width="1400" Loaded="Window_Loaded">
     <Window.Background>
         <ImageBrush ImageSource="/Background.jpg"/>
     </Window.Background>
-    <Viewbox>
-        <Grid Margin="10,10,10,10" HorizontalAlignment="Center" VerticalAlignment="Top">
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Bottom">
+            <Label x:Name="LblHistoriek" Width="700" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Height="50" Foreground="White" MouseDoubleClick="LblHistoriek_MouseDoubleClick" />
+            <Label x:Name="LblTijdstip" Width="700" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Height="50" Foreground="White" />
+        </WrapPanel>
+        <Viewbox VerticalAlignment="Top">
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="300"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="150"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="200"/>
-                <RowDefinition Height="200"/>
-                <RowDefinition Height="200"/>
-                <RowDefinition Height="80"/>
+            <StackPanel>
+                <Button Visibility="Visible" x:Name="BtnNieuweSpel" Content="Nieuwe Spel" Width="150" Height="50"  Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="White" FontWeight="Bold" Click="BtnNieuweSpel_Click">
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="White"/>
+                            <GradientStop Color="#FF9CFFF3" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+                <Grid x:Name="GridScherm" Margin="10" HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="450"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="450"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="250"/>
+                        <RowDefinition Height="250"/>
+                        <RowDefinition Height="250"/>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="120"/>
 
-            </Grid.RowDefinitions>
-            
-            <WrapPanel Grid.Column="0" Grid.Row="3" VerticalAlignment="Top" Margin="10">
-            <Label Content="Bepaal inzet (10% van je kapitaal):"  VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="25" VerticalContentAlignment="Center" FontFamily="Gabriola" Foreground="White"/>
-            <Slider x:Name="SldrKapitaal" IsSnapToTickEnabled="True" Maximum="100" Width="280" ValueChanged="SldrKapitaal_ValueChanged" />
-            </WrapPanel>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Column="0" Grid.Row="3">
+                        <WrapPanel VerticalAlignment="Top" Margin="10" HorizontalAlignment="Center">
+                            <Label Content="Bepaal je inzet (10% van je kapitaal):"  VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="25" VerticalContentAlignment="Center" FontFamily="Gabriola" Foreground="White"/>
+                            <Slider x:Name="SldrKapitaal" IsSnapToTickEnabled="True" Maximum="100" Width="280" ValueChanged="SldrKapitaal_ValueChanged"/>
+                        </WrapPanel>
 
-            <WrapPanel VerticalAlignment="Bottom" Grid.Row="3" Grid.Column="0" Margin="10">
-                <WrapPanel>
-                    <Label Content="Inzet:"  FontSize="25" FontFamily="Gabriola"  Foreground="White"/>
-                    <TextBox x:Name="TxtInzet" Margin="55,5,5,5"  Width="100" Height="30" IsEnabled="False" FontSize="24"/>
-                </WrapPanel>
-                <WrapPanel>
-                    <Label Content="Kapitaal:" FontSize="25" FontFamily="Gabriola" Foreground="White"/>
-                    <TextBox Margin="30,5,5,5" x:Name="TxtKapitaal" Width="100" Height="30" IsEnabled="False" FontSize="24"/>
-                </WrapPanel>
-            </WrapPanel>
-        
-            <ListBox x:Name="LstbxSpeler" Height="200" Width="200" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="0" Background="White" BorderBrush="Black" BorderThickness="5,5,5,5" SnapsToDevicePixels="True" FontSize="18"/>
-            <ListBox x:Name="LstbxBank" Height="200" Width="200" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="4" Background="White" BorderBrush="Black" BorderThickness="5,5,5,5" SnapsToDevicePixels="True" FontSize="18"/>
+                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10">
+                            <WrapPanel>
+                                <Label Content="Inzet:"  FontSize="25" FontFamily="Gabriola"  Foreground="White"/>
+                                <TextBox x:Name="TxtInzet" Margin="55,5,5,5"  Width="100" Height="30" IsEnabled="False" FontSize="24"/>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <Label Content="Kapitaal:" FontSize="25" FontFamily="Gabriola" Foreground="White"/>
+                                <TextBox Margin="30,5,5,5" x:Name="TxtKapitaal" Width="100" Height="30" IsEnabled="False" FontSize="24"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </StackPanel>
 
-            <Button x:Name="BtnDeel" Grid.Row="1" Grid.Column="0" Height="50" Width="150" Content="Deel" Click="BtnDeel_Click" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black"  FontWeight="Bold">
-                <Button.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="White"/>
-                        <GradientStop Color="#FFAC70C5" Offset="1"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-            </Button>
+                    <WrapPanel Grid.Column="4" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20">
+                        <Label Content="Inzet en kapitaal bank:"  VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="25" VerticalContentAlignment="Center" FontFamily="Gabriola" Foreground="White"/>
+                    </WrapPanel>
+                    <WrapPanel VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Row="3" Grid.Column="4" Margin="20,95,20,0">
+                        <WrapPanel>
+                            <Label Content="Inzet:"  FontSize="25" FontFamily="Gabriola"  Foreground="White"/>
+                            <TextBox x:Name="TxtInzetBank" Margin="55,5,5,5"  Width="100" Height="30" IsEnabled="False" FontSize="24"/>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <Label Content="Kapitaal:" FontSize="25" FontFamily="Gabriola" Foreground="White"/>
+                            <TextBox Margin="30,5,5,5" x:Name="TxtKapitaalBank" Width="100" Height="30" IsEnabled="False" FontSize="24"/>
+                        </WrapPanel>
+                    </WrapPanel>
 
-            <Button x:Name="BtnHit" Grid.Row="1" Grid.Column="2" Height="50" Width="150" Content="Hit" VerticalAlignment="Center" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" Click="BtnHit_Click"  FontWeight="Bold">
-                <Button.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="White"/>
-                        <GradientStop Color="#FFBAFF9C" Offset="1"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-            </Button>
+                    <ListBox x:Name="LstbxSpeler" Height="200" Width="200" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="0" Background="White" BorderBrush="Black" BorderThickness="5,5,5,5" SnapsToDevicePixels="True" FontSize="18" IsEnabled="False"/>
+                    <ListBox x:Name="LstbxBank" Height="200" Width="200" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="4" Background="White" BorderBrush="Black" BorderThickness="5,5,5,5" SnapsToDevicePixels="True" FontSize="18" IsEnabled="False"/>
 
-            <Button x:Name="BtnStand" Grid.Row="1" Grid.Column="4" Height="50" Width="150" Content="Stand" VerticalAlignment="Center" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" Click="BtnStand_Click" FontWeight="Bold">
-                <Button.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="White"/>
-                        <GradientStop Color="#FFFF9C9C" Offset="1"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-            </Button>
-            <Button x:Name="BtnNieuweSpel" Content="Nieuwe Spel" Width="150" Height="50" Grid.Column="2" Grid.Row="0" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="White" FontWeight="Bold" Click="BtnNieuweSpel_Click">
-                <Button.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="White"/>
-                        <GradientStop Color="#FF6E81FF" Offset="1"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-            </Button>
-            <Label Content="Speler" Grid.Row="0" Grid.Column="0" Height="80" Width="100" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola" Foreground="White" UseLayoutRounding="True" FontStretch="SemiCondensed">
-                <Label.Effect>
-                    <DropShadowEffect/>
-                </Label.Effect>
-            </Label>
-            <Label Content ="Bank" Grid.Row="0" Grid.Column="4" Height="80" Width="100" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola" Foreground="White">
-                <Label.Effect>
-                    <DropShadowEffect/>
-                </Label.Effect>
-            </Label>
-            <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left">
-                <Label Content="Score speler:"   Height="50" Width="100" HorizontalContentAlignment="Center" FontSize="16" Foreground="White"/>
-                <Label x:Name="LblSpelerTotaal"  Height="100" Width="100" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola" Foreground="White"/>
+                    <Button x:Name="BtnDeel" Grid.Row="1" Grid.Column="0" Height="50" Width="150" Content="Deel" Click="BtnDeel_Click" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black"  FontWeight="Bold">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="#FFAC70C5" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+
+                    <Button x:Name="BtnHit" Grid.Row="1" Grid.Column="2" Height="50" Width="150" Content="Hit" VerticalAlignment="Center" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" Click="BtnHit_Click"  FontWeight="Bold">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="#FFBAFF9C" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+
+                    <Button x:Name="BtnStand" Grid.Row="1" Grid.Column="4" Height="50" Width="150" Content="Stand" VerticalAlignment="Center" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" Click="BtnStand_Click" FontWeight="Bold">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="#FFFF9C9C" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+
+                    <Label Content="Speler" Grid.Row="0" Grid.Column="0" Height="80" Width="100" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola" Foreground="White" UseLayoutRounding="True" FontStretch="SemiCondensed">
+                        <Label.Effect>
+                            <DropShadowEffect/>
+                        </Label.Effect>
+                    </Label>
+                    
+                    <Label Content ="Bank" Grid.Row="0" Grid.Column="4" Height="80" Width="100" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola" Foreground="White">
+                        <Label.Effect>
+                            <DropShadowEffect/>
+                        </Label.Effect>
+                    </Label>
+
+                    <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                        <Label Content="Score speler:" Height="50" Width="150" HorizontalContentAlignment="Center" FontFamily="Gabriola" FontSize="26" Foreground="White"/>
+                        <Label x:Name="LblSpelerTotaal"  Height="100" Width="150" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" >
+                        <Label Content="Score bank:" Height="50" Width="150" HorizontalContentAlignment="Center" FontFamily="Gabriola" FontSize="26" Foreground="White"/>
+                        <Label x:Name="LblBankTotaal" Height="100" Width="150" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola"  Foreground="White"/>
+                    </StackPanel>
+
+                    <Button x:Name="BtnDoubleDown" Grid.Column="2" Grid.Row="2" Height="50" Width="150" Content="Double Down" VerticalAlignment="Bottom" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" Click="BtnHit_Click"  FontWeight="Bold">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="#FFFFFF56" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    
+                    <Label x:Name="LblResultaat" Margin="10" Grid.Row="3" Grid.Column="2"  Height="60" Width="280" FontSize="36" FontFamily="Ink Free" HorizontalContentAlignment="Center" Background="White">
+                        <Label.Effect>
+                            <DropShadowEffect/>
+                        </Label.Effect>
+                    </Label>
+
+                    <Image x:Name="ImgSpelerKaart1" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" />
+                    <Image x:Name="ImgSpelerKaart2" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="30,0,0,0"/>
+                    <Image x:Name="ImgSpelerKaart3" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="60,0,0,0"/>
+                    <Image x:Name="ImgSpelerKaart4" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="90,0,0,0"/>
+                    <Image x:Name="ImgSpelerKaart5" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="120,0,0,0"/>
+                    <Image x:Name="ImgSpelerKaart6" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="150,0,0,0"/>
+
+                    <Image x:Name="ImgBankKaart1" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="0,0,0,0"/>
+                    <Image x:Name="ImgBankKaart2" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="30,0,0,0" />
+                    <Image x:Name="ImgBankKaart3" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="60,0,0,0" />
+                    <Image x:Name="ImgBankKaart4" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="90,0,0,0" />
+                    <Image x:Name="ImgBankKaart5" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="120,0,0,0" />
+                    <Image x:Name="ImgBankKaart6" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="150,0,0,0" />
+
+
+
+                    <WrapPanel Margin="10" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="5">
+                        <Image x:Name="ImgSchoppen2" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen3" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen4" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen5" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen6" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen7" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen8" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen9" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppen10" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppenBoer" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppenDame" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppenKoning" Height="100" Width="50"/>
+                        <Image x:Name="ImgSchoppenAas" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten2" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten3" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten4" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten5" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten6" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten7" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten8" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten9" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuiten10" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuitenBoer" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuitenDame" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuitenKoning" Height="100" Width="50"/>
+                        <Image x:Name="ImgRuitenAas" Height="100" Width="50"/>
+                    </WrapPanel>
+                    <WrapPanel Margin="10" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="5">
+                        <Image x:Name="ImgKlaveren2" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren3" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren4" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren5" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren6" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren7" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren8" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren9" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaveren10" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaverenBoer" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaverenDame" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaverenKoning" Height="100" Width="50"/>
+                        <Image x:Name="ImgKlaverenAas" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten2" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten3" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten4" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten5" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten6" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten7" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten8" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten9" Height="100" Width="50"/>
+                        <Image x:Name="ImgHarten10" Height="100" Width="50"/>
+                        <Image x:Name="ImgHartenBoer" Height="100" Width="50"/>
+                        <Image x:Name="ImgHartenDame" Height="100" Width="50"/>
+                        <Image x:Name="ImgHartenKoning" Height="100" Width="50"/>
+                        <Image x:Name="ImgHartenAas" Height="100" Width="50"/>
+                    </WrapPanel>
+                </Grid>
+                
+
             </StackPanel>
-            <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right">
-                <Label Content="Score bank:" Height="50" Width="100" HorizontalContentAlignment="Center" FontSize="16" Foreground="White"/>
-                <Label x:Name="LblBankTotaal" Height="100" Width="100" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola"  Foreground="White"/>
-            </StackPanel>
-            <Label x:Name="LblResultaat" Margin="10" Grid.Row="3" Grid.Column="2"  Height="60" Width="280" FontSize="36" FontFamily="Ink Free" HorizontalContentAlignment="Center" Background="White">
-                <Label.Effect>
-                    <DropShadowEffect/>
-                </Label.Effect>
-            </Label>
 
-            <Image x:Name="ImgSpelerKaart1" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" />
-            <Image x:Name="ImgSpelerKaart2" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="30,0,0,0"/>
-            <Image x:Name="ImgSpelerKaart3" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="60,0,0,0"/>
-            <Image x:Name="ImgSpelerKaart4" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="90,0,0,0"/>
-            <Image x:Name="ImgSpelerKaart5" HorizontalAlignment="Left" Height="200" Grid.Row="4"  Width="150" Margin="120,0,0,0"/>
-            <Image x:Name="ImgBankKaart1" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="0,0,0,0"/>
-            <Image x:Name="ImgBankKaart2" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="30,0,0,0" />
-            <Image x:Name="ImgBankKaart3" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="60,0,0,0" />
-            <Image x:Name="ImgBankKaart4" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="90,0,0,0" />
-            <Image x:Name="ImgBankKaart5" HorizontalAlignment="Left" Height="200" Grid.Row="4" Grid.Column="4" Width="150" Margin="120,0,0,0" />
-
-            
-        </Grid>
-    </Viewbox>
+        </Viewbox>
+    </DockPanel>
 </Window>
