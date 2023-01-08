@@ -126,7 +126,7 @@
                         <Label x:Name="LblBankTotaal" Height="100" Width="150" FontSize="36" HorizontalContentAlignment="Center" FontFamily="Gabriola"  Foreground="White"/>
                     </StackPanel>
 
-                    <Button x:Name="BtnDoubleDown" Grid.Column="2" Grid.Row="2" Height="50" Width="150" Content="Double Down" VerticalAlignment="Bottom" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" Click="BtnHit_Click"  FontWeight="Bold">
+                    <Button x:Name="BtnDoubleDown" Grid.Column="2" Grid.Row="2" Height="50" Width="150" Content="Double Down" VerticalAlignment="Bottom" IsEnabled="True" Foreground="Black" FontFamily="Century Gothic" FontSize="20" BorderBrush="Black" FontWeight="Bold" Click="BtnDoubleDown_Click">
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="White"/>
