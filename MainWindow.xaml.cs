@@ -34,25 +34,45 @@ namespace BlackJack
         BitmapImage[] kaartImages;
         BitmapImage[] kaartImagesDeck;
 
+        /// <summary>
+        /// gekozen kaarten worden voor de bank en speler in een list opgeslaan?
+        /// </summary>
         List<int> gekozenKaartenSpeler = new List<int>();
         List<int> gekozenKaartenBank = new List<int>();
-        List<int> gekozenKaartenDeck = new List<int>();
         
+        /// <summary>
+        /// per klik wordt het aantal opgeslaan?
+        /// </summary>
         int hitCount;
+
+        /// <summary>
+        /// elk verloren of gewonnen ronde wordt bijgehouden (deel, hit/stand, einde ronde)
+        /// </summary>
         int ronde;
         
+        /// <summary>
+        /// de totale scores worden bijgehouden
+        /// </summary>
         int totaalSpeler;
         int totaalBank;
 
+        /// <summary>
+        /// verloren of gewonnen bedragen worden bijgehouden
+        /// </summary>
         int gewonnenBedragSpeler;
         int verlorenBedragSpeler;
 
+        /// <summary>
+        /// ?
+        /// </summary>
         bool isSpeler = true;
+
         Random rnd = new Random();
 
         int kapitaalSpeler = 100;
         int kapitaalBank = 100;
 
+      
         int bankInzet;
         int spelerInzet;
 
@@ -71,6 +91,7 @@ namespace BlackJack
             BtnHit.IsEnabled = false;
             BtnNieuweSpel.IsEnabled = true;
             BtnStand.IsEnabled = false;
+            BtnDoubleDown.IsEnabled = false;
             kapitaalBank = 100;
             kapitaalSpeler = 100;
             LblBankTotaal.Content = "0";
@@ -98,6 +119,7 @@ namespace BlackJack
             historiek.Clear();
             BtnDeel.IsEnabled = false;
             BtnHit.IsEnabled = false;
+            BtnDoubleDown.IsEnabled = false;
             BtnStand.IsEnabled = false;
             gekozenKaartenBank.Clear();
             gekozenKaartenSpeler.Clear();
@@ -136,6 +158,7 @@ namespace BlackJack
             gekozenKaartenBank.Clear();
             BtnHit.IsEnabled = true;
             BtnStand.IsEnabled = true;
+            BtnDoubleDown.IsEnabled = true;
             BtnDeel.IsEnabled = false;
             LstbxSpeler.Items.Clear();
             LstbxBank.Items.Clear();
@@ -152,7 +175,7 @@ namespace BlackJack
             totaalSpeler = 0;
             totaalBank = 0;
 
-            bankInzet = rndInzetBank.Next(1, 100);
+            bankInzet = rndInzetBank.Next(1, TxtKapitaalBank.Text.Length);
             spelerInzet = int.Parse(TxtInzet.Text);
             TxtInzetBank.Text = bankInzet.ToString();
             TxtKapitaalBank.Text = kapitaalBank.ToString();
@@ -160,11 +183,14 @@ namespace BlackJack
             gewonnenBedragSpeler = (spelerInzet * 2);
             verlorenBedragSpeler = spelerInzet;
 
+            /// Hier krijgt de speler 2 kaarten
             for (int i = 0; i < 2; i++)
             {
                 GeefKaart(isSpeler);
             }
+
             GeefKaart(!isSpeler);
+
             ImgSpelerKaart1.Source = kaartImages[gekozenKaartenSpeler[0]];
             ImgSpelerKaart2.Source = kaartImages[gekozenKaartenSpeler[1]];
             ImgBankKaart1.Source = kaartImages[gekozenKaartenBank[0]];
@@ -175,6 +201,7 @@ namespace BlackJack
 
         private void BtnHit_Click(object sender, RoutedEventArgs e)
         {
+            /// hier worden de gekozen kaarten getoond indien er geklikt (hitcount) wordt.
             GeefKaart(isSpeler);
             if(hitCount == 0) 
             {
@@ -213,8 +240,11 @@ namespace BlackJack
                 BtnStand.IsEnabled = false;
                 kapitaalBank = kapitaalBank + (bankInzet * 2);
                 TxtKapitaalBank.Text = kapitaalBank.ToString();
-               
+                historiek.Insert(0, $"Ronde{ronde}: je verloren bedrag: {verlorenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
+
             }
+
+            /// wanneer je kapitaal lager is dan 0 kan je niet verder spelen. Wanneer de kapitaal van de bank lager is dan 0 moet je een nieuwe spel starten.
 
             if (kapitaalSpeler == 0)
             {
@@ -229,7 +259,7 @@ namespace BlackJack
                 GridScherm.Visibility = Visibility.Hidden;
             }
 
-            if (kapitaalBank <= 0)
+            if (kapitaalBank == 0)
             {
                 BuildArray();
                 GameDeck();
@@ -241,12 +271,16 @@ namespace BlackJack
                 MessageBox.Show("Jij hebt de game gewonnen!", "Start een nieuwe spel!");
                 GridScherm.Visibility = Visibility.Hidden;
             }
+
+            LblHistoriek.Content = $"De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n";
         }
+
         private void BtnStand_Click(object sender, RoutedEventArgs e)
         {
             gewonnenBedragSpeler = (spelerInzet * 2);
             verlorenBedragSpeler = spelerInzet;
 
+            /// de bank krijgt hier kaarten random uitgedeeld, de score mag niet lager of gelijk aan 17 zijn
             do
             {
                 GeefKaart(!isSpeler);
@@ -285,6 +319,7 @@ namespace BlackJack
             BtnHit.IsEnabled = false;
             BtnStand.IsEnabled = false;
             BtnDeel.IsEnabled = false;
+            BtnDoubleDown.IsEnabled = false;
             SldrKapitaal.IsEnabled = true;
            
 
@@ -293,6 +328,7 @@ namespace BlackJack
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
                 BtnDeel.IsEnabled = false;
+                BtnDoubleDown.IsEnabled = false;
                 SldrKapitaal.IsEnabled = false;
                 
                 MessageBox.Show("Helaas.. Je hebt al je geld verkwist. Volgende keer meer geluk", "Je geld is op");
@@ -307,16 +343,171 @@ namespace BlackJack
                 BtnHit.IsEnabled = false;
                 BtnStand.IsEnabled = false;
                 BtnDeel.IsEnabled = false;
+                BtnDoubleDown.IsEnabled = false;
                 SldrKapitaal.IsEnabled = false;
 
                 MessageBox.Show("Jij hebt het spel gewonnen!", "Start een nieuwe spel!");
                 GridScherm.Visibility = Visibility.Hidden;
             }
 
-          
+            LblHistoriek.Content = $" De som van je kapitaal is: {kapitaalSpeler} / De som van het kapitaal van de bank is: {kapitaalBank}\n";
 
         }
 
+        private void BtnDoubleDown_Click(object sender, RoutedEventArgs e)
+        {
+
+            BtnDeel.IsEnabled = false;
+            BtnHit.IsEnabled = false;
+            BtnStand.IsEnabled = false;
+
+            SldrKapitaal.IsEnabled = true;
+
+            /// als de kapitaal lager is dan de inzet *2 dan krijgt de speler een messagebox te zien
+
+            if ((spelerInzet * 2) > (int.Parse(TxtKapitaal.Text)))
+            {
+                MessageBox.Show("Je kapitaal is te laag!");
+            }
+
+
+                int inzetDouble = (spelerInzet * 2);
+                TxtInzet.Text = inzetDouble.ToString();
+
+                GeefKaart(isSpeler);
+                do
+                {
+                    GeefKaart(!isSpeler);
+
+                }
+                while (totaalBank <= 17);
+
+                ImgBankKaart2.Source = kaartImages[gekozenKaartenBank[1]];
+
+
+                if (gekozenKaartenBank.Count > 2)
+                {
+                    ImgBankKaart3.Source = kaartImages[gekozenKaartenBank[2]];
+                }
+
+                if (gekozenKaartenBank.Count > 3)
+                {
+                    ImgBankKaart4.Source = kaartImages[gekozenKaartenBank[3]];
+                }
+
+                if (gekozenKaartenBank.Count > 4)
+                {
+                    ImgBankKaart5.Source = kaartImages[gekozenKaartenBank[4]];
+                }
+
+                if (gekozenKaartenBank.Count > 5)
+                {
+                    ImgBankKaart6.Source = kaartImages[gekozenKaartenBank[5]];
+                }
+
+
+                LblBankTotaal.Content = totaalBank;
+
+                if (totaalSpeler > 21)
+                {
+                    BuildArray();
+                    GameDeck();
+                    LblResultaat.Content = "VERLOREN";
+                    LblResultaat.Foreground = new SolidColorBrush(Colors.Red);
+                    kapitaalSpeler = int.Parse(TxtKapitaal.Text) - inzetDouble;
+                    TxtKapitaal.Text = kapitaalSpeler.ToString();
+                    kapitaalBank = kapitaalBank + ((bankInzet * 2)*2);
+                    TxtKapitaalBank.Text = kapitaalBank.ToString();
+                    historiek.Insert(0, $"Ronde{ronde}: je verloren bedrag: {verlorenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
+                    return;
+                }
+
+                if (totaalSpeler == totaalBank)
+                {
+                    BuildArray();
+                    GameDeck();
+                    LblResultaat.Content = "PUSH";
+                    LblResultaat.Foreground = new SolidColorBrush(Colors.Black);
+
+                    return;
+                }
+
+                if (totaalBank > 21)
+                {
+                    BuildArray();
+                    GameDeck();
+                    LblResultaat.Content = "GEWONNEN";
+                    LblResultaat.Foreground = new SolidColorBrush(Colors.Green);
+                    kapitaalSpeler = int.Parse(TxtKapitaal.Text) + (inzetDouble * 2);
+                    TxtKapitaal.Text = kapitaalSpeler.ToString();
+                    kapitaalBank = kapitaalBank - (bankInzet*2);
+                    TxtKapitaalBank.Text = kapitaalBank.ToString();
+                    historiek.Insert(0, $"Ronde{ronde}: je gewonnen bedrag: {gewonnenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
+                    return;
+                }
+
+                if (totaalSpeler < totaalBank)
+                {
+                    BuildArray();
+                    GameDeck();
+                    LblResultaat.Content = "VERLOREN";
+                    LblResultaat.Foreground = new SolidColorBrush(Colors.Red);
+                    kapitaalSpeler = int.Parse(TxtKapitaal.Text) - inzetDouble;
+                    TxtKapitaal.Text = kapitaalSpeler.ToString();
+                    kapitaalBank = kapitaalBank + ((bankInzet * 2)*2);
+                    TxtKapitaalBank.Text = kapitaalBank.ToString();
+                    historiek.Insert(0, $"Ronde{ronde}: je verloren bedrag: {verlorenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
+                    return;
+                }
+
+                if (totaalSpeler > totaalBank)
+                {
+                    BuildArray();
+                    GameDeck();
+                    LblResultaat.Content = "GEWONNEN";
+                    LblResultaat.Foreground = new SolidColorBrush(Colors.Green);
+                    kapitaalSpeler = int.Parse(TxtKapitaal.Text) + (inzetDouble * 2);
+                    TxtKapitaal.Text = kapitaalSpeler.ToString();
+                    kapitaalBank = kapitaalBank - (bankInzet*2);
+                    TxtKapitaalBank.Text = kapitaalBank.ToString();
+                    historiek.Insert(0, $"Ronde{ronde}: je gewonnen bedrag: {gewonnenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
+
+                }
+                LblHistoriek.Content = $"De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n";
+
+
+                if (kapitaalSpeler == 0)
+                {
+                    BtnHit.IsEnabled = false;
+                    BtnStand.IsEnabled = false;
+                    BtnDeel.IsEnabled = false;
+                    SldrKapitaal.IsEnabled = false;
+
+                    MessageBox.Show("Helaas.. Je hebt al je geld verkwist. Volgende keer meer geluk", "Je geld is op");
+                    GridScherm.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    SldrKapitaal.Value = 0;
+                }
+
+                if (kapitaalBank == 0)
+                {
+                    BtnHit.IsEnabled = false;
+                    BtnStand.IsEnabled = false;
+                    BtnDeel.IsEnabled = false;
+                    SldrKapitaal.IsEnabled = false;
+
+                    MessageBox.Show("Jij hebt het spel gewonnen!", "Start een nieuwe spel!");
+                    GridScherm.Visibility = Visibility.Hidden;
+                }
+
+            
+        }
+        /// <summary>
+        /// Bij deze methode wordt er random kaarten gekozen voor de speler en bank van de array kaartNamen.
+        /// </summary>
+        /// <param name="isSpeler">naam van de parameter, speler (isSpeler) of bank (!isSpeler) </param>
         private void GeefKaart(bool isSpeler)
         {
             int waarde = rnd.Next(kaartNamen.Length);
@@ -342,8 +533,8 @@ namespace BlackJack
                     totaalSpeler += kaartWaarde[waarde];
                 }
 
-                //gekozenKaartenDeck.Remove(waarde);
-                //kaartImages[waarde].StreamSource = null;
+     
+         
                 kaartImagesDeck[waarde] = null;
                 GameDeck();
             }
@@ -366,13 +557,16 @@ namespace BlackJack
                 } else {
                     totaalBank += kaartWaarde[waarde];
                 }
-                //gekozenKaartenDeck.Remove(waarde);
+                
                 kaartImagesDeck[waarde] = null;
                 GameDeck();
             }
 
         }
 
+        /// <summary>
+        /// Hier worden de gegevens in Array opgeslaan. Namen van de kaarten, de waardes van de kaarten en ook de afbeeldingen.
+        /// </summary>
         private void BuildArray()
         {
             kaartNamen = new string[52] { "Schoppen 2", "Schoppen 3", "Schoppen 4", "Schoppen 5", "Schoppen 6", "Schoppen 7", "Schoppen 8", "Schoppen 9", "Schoppen 10", "Schoppen Boer", "Schoppen Dame", "Schoppen Koning", "Schoppen Aas", 
@@ -383,120 +577,123 @@ namespace BlackJack
                 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1 };
             kaartImages = new BitmapImage[]
             {
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen2.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen3.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen4.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen5.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen6.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen7.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen8.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen9.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen10.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenBoer.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenDame.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenKoning.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenAas.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten2.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten3.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten4.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten5.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten6.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten7.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten8.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten9.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten10.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenBoer.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenDame.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenKoning.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenAas.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren2.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren3.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren4.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren5.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren6.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren7.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren8.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren9.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren10.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenBoer.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenDame.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenKoning.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenAas.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten2.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten3.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten4.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten5.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten6.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten7.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten8.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten9.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten10.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenBoer.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenDame.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenKoning.png", UriKind.Absolute)),
-            new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenAas.png", UriKind.Absolute)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenAas.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenAas.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenAas.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenAas.png", UriKind.Relative)),
 
         };
             kaartImagesDeck = new BitmapImage[]
                 {
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen2.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen3.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen4.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen5.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen6.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen7.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen8.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen9.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Schoppen10.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenBoer.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenDame.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenKoning.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\SchoppenAas.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten2.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten3.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten4.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten5.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten6.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten7.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten8.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten9.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Ruiten10.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenBoer.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenDame.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenKoning.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\RuitenAas.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren2.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren3.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren4.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren5.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren6.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren7.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren8.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren9.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Klaveren10.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenBoer.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenDame.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenKoning.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\KlaverenAas.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten2.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten3.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten4.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten5.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten6.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten7.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten8.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten9.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\Harten10.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenBoer.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenDame.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenKoning.png", UriKind.Absolute)),
-                new BitmapImage(new Uri(@"C:\Users\yasem\OneDrive\Documenten\Graduaat programmeren\Semester 1\Werkplekleren 1\Project draaiboek\BlackJack\CardImages\HartenAas.png", UriKind.Absolute)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Schoppen10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\SchoppenAas.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Ruiten10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\RuitenAas.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Klaveren10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\KlaverenAas.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten2.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten3.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten4.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten5.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten6.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten7.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten8.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten9.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\Harten10.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenBoer.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenDame.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenKoning.png", UriKind.Relative)),
+            new BitmapImage(new Uri(@"\CardImages\HartenAas.png", UriKind.Relative)),
 
             };
             GameDeck();
         }
 
 
+        /// <summary>
+        /// Hier zijn alle afbeeldingen van de deck die worden weergegeven op het scherm.
+        /// </summary>
         private void GameDeck()
         {
             ImgSchoppen2.Source = kaartImagesDeck[0];
@@ -556,6 +753,11 @@ namespace BlackJack
             ImgHartenAas.Source = kaartImagesDeck[51];
         }
 
+
+        /// <summary>
+        /// Hier wordt er gekeken of de speler of bank heeft gewonnen of verloren of gelijkspel hebben. Bij bijvoorbeeld verloren, verliest de speler.
+        /// Inzet wordt afgetrokken van de kapitaal. Bank krijgt zijn inzet dubbel terug. Ook wordt het verloren of gewonnenbedrag getoond in de label.
+        /// </summary>
         private void Gamestatus()
         {
             if (totaalSpeler > 21)
@@ -568,7 +770,7 @@ namespace BlackJack
                 TxtKapitaal.Text = kapitaalSpeler.ToString();
                 kapitaalBank = kapitaalBank + (bankInzet * 2);
                 TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {verlorenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
+                historiek.Insert(0, $"Ronde{ronde}: je verloren bedrag: {verlorenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
                 return;
             }
 
@@ -578,7 +780,7 @@ namespace BlackJack
                 GameDeck();
                 LblResultaat.Content = "PUSH";
                 LblResultaat.Foreground = new SolidColorBrush(Colors.Black);
-                historiek.Insert(0, $"{ronde}: {verlorenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
+               
 
                 return;
             }
@@ -593,7 +795,7 @@ namespace BlackJack
                 TxtKapitaal.Text = kapitaalSpeler.ToString();
                 kapitaalBank = kapitaalBank - bankInzet;
                 TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {gewonnenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
+                historiek.Insert(0, $"Ronde{ronde}: je gewonnen bedrag: {gewonnenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
 
                 return;
             }
@@ -608,8 +810,7 @@ namespace BlackJack
                 TxtKapitaal.Text = kapitaalSpeler.ToString();
                 kapitaalBank = kapitaalBank + (bankInzet * 2);
                 TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {verlorenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
-
+                historiek.Insert(0, $"Ronde{ronde}: je verloren bedrag: {verlorenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
                 return;
             }
 
@@ -623,12 +824,16 @@ namespace BlackJack
                 TxtKapitaal.Text = kapitaalSpeler.ToString();
                 kapitaalBank = kapitaalBank - bankInzet;
                 TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {gewonnenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
+                historiek.Insert(0, $"Ronde{ronde}: je gewonnen bedrag: {gewonnenBedragSpeler} – De som van je kapitaal is: {kapitaalSpeler} / de som van het kapitaal van de bank is: {kapitaalBank}\n");
 
             }
 
         }
 
+        /// <summary>
+        /// Hier wordt er gekeken of de speler 10% van de kapitaal heeft ingezet.
+        /// </summary>
+  
         private void SldrKapitaal_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (SldrKapitaal.Value >= kapitaalSpeler * 0.1)
@@ -646,6 +851,9 @@ namespace BlackJack
             ImgKaartNull();
         }
 
+        /// <summary>
+        /// Code werd te vaak herhaald waardor ik deze in een methode heb geplaatst.
+        /// </summary>
         private void ImgKaartNull()
         {
             ImgSpelerKaart1.Source = null;
@@ -661,171 +869,30 @@ namespace BlackJack
             ImgBankKaart5.Source = null;
             ImgBankKaart6.Source = null;
         }
+
+        /// <summary>
+        /// Hier wordt de tijd getoond in een label.
+        /// </summary>
+      
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             LblTijdstip.Content = $"{DateTime.Now.ToLongTimeString()}";
             
         }
 
+        /// <summary>
+        /// Hier wordt er een overzicht getoond van de gespeelde rondes wanneer je dubbel klikt op de label waar de historiek verschijnt
+        /// </summary>
+ 
         private void LblHistoriek_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             string historiekOverview = historiek.ToString();
             MessageBox.Show(historiekOverview);
         }
 
-        private void BtnDoubleDown_Click(object sender, RoutedEventArgs e)
-        {
-            BtnDeel.IsEnabled = false;
-            BtnHit.IsEnabled = false;
-            BtnStand.IsEnabled = false;
+        
 
-            if ((spelerInzet*2) >= (int.Parse(TxtKapitaal.Text)))
-            {
-                MessageBox.Show("Je kapitaal is te laag!");
-            }
-
-          
-
-            int inzetDouble = (spelerInzet * 2);
-            TxtInzet.Text = inzetDouble.ToString();
-
-            GeefKaart(isSpeler);
-            do
-            {
-                GeefKaart(!isSpeler);
-
-            }
-            while (totaalBank <= 17);
-
-            ImgBankKaart2.Source = kaartImages[gekozenKaartenBank[1]];
-
-
-            if (gekozenKaartenBank.Count > 2)
-            {
-                ImgBankKaart3.Source = kaartImages[gekozenKaartenBank[2]];
-            }
-
-            if (gekozenKaartenBank.Count > 3)
-            {
-                ImgBankKaart4.Source = kaartImages[gekozenKaartenBank[3]];
-            }
-
-            if (gekozenKaartenBank.Count > 4)
-            {
-                ImgBankKaart5.Source = kaartImages[gekozenKaartenBank[4]];
-            }
-
-            if (gekozenKaartenBank.Count > 5)
-            {
-                ImgBankKaart6.Source = kaartImages[gekozenKaartenBank[5]];
-            }
-
-
-            LblBankTotaal.Content = totaalBank;
-
-            if (totaalSpeler > 21)
-            {
-                BuildArray();
-                GameDeck();
-                LblResultaat.Content = "VERLOREN";
-                LblResultaat.Foreground = new SolidColorBrush(Colors.Red);
-                kapitaalSpeler = int.Parse(TxtKapitaal.Text) - inzetDouble;
-                TxtKapitaal.Text = kapitaalSpeler.ToString();
-                kapitaalBank = kapitaalBank + (bankInzet * 2);
-                TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {verlorenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
-                return;
-            }
-
-            if (totaalSpeler == totaalBank)
-            {
-                BuildArray();
-                GameDeck();
-                LblResultaat.Content = "PUSH";
-                LblResultaat.Foreground = new SolidColorBrush(Colors.Black);
-                historiek.Insert(0, $"{ronde}: {verlorenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
-                return;
-            }
-
-            if (totaalBank > 21)
-            {
-                BuildArray();
-                GameDeck();
-                LblResultaat.Content = "GEWONNEN";
-                LblResultaat.Foreground = new SolidColorBrush(Colors.Green);
-                kapitaalSpeler = int.Parse(TxtKapitaal.Text) + (inzetDouble * 2);
-                TxtKapitaal.Text = kapitaalSpeler.ToString();
-                kapitaalBank = kapitaalBank - bankInzet;
-                TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {gewonnenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
-                return;
-            }
-
-            if (totaalSpeler < totaalBank)
-            {
-                BuildArray();
-                GameDeck();
-                LblResultaat.Content = "VERLOREN";
-                LblResultaat.Foreground = new SolidColorBrush(Colors.Red);
-                kapitaalSpeler = int.Parse(TxtKapitaal.Text) - inzetDouble;
-                TxtKapitaal.Text = kapitaalSpeler.ToString();
-                kapitaalBank = kapitaalBank + (bankInzet * 2);
-                TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {verlorenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
-                return;
-            }
-
-            if (totaalSpeler > totaalBank)
-            {
-                BuildArray();
-                GameDeck();
-                LblResultaat.Content = "GEWONNEN";
-                LblResultaat.Foreground = new SolidColorBrush(Colors.Green);
-                kapitaalSpeler = int.Parse(TxtKapitaal.Text) + (inzetDouble * 2);
-                TxtKapitaal.Text = kapitaalSpeler.ToString();
-                kapitaalBank = kapitaalBank - bankInzet;
-                TxtKapitaalBank.Text = kapitaalBank.ToString();
-                historiek.Insert(0, $"{ronde}: {gewonnenBedragSpeler} – {kapitaalSpeler} / {kapitaalBank}\n");
-
-            }
-
-            // Gamestatus();
-
-            BtnHit.IsEnabled = false;
-            BtnStand.IsEnabled = false;
-            BtnDeel.IsEnabled = false;
-            SldrKapitaal.IsEnabled = true;
-
-
-            if (kapitaalSpeler == 0)
-            {
-                BtnHit.IsEnabled = false;
-                BtnStand.IsEnabled = false;
-                BtnDeel.IsEnabled = false;
-                SldrKapitaal.IsEnabled = false;
-
-                MessageBox.Show("Helaas.. Je hebt al je geld verkwist. Volgende keer meer geluk", "Je geld is op");
-                GridScherm.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                SldrKapitaal.Value = 0;
-            }
-
-            if (kapitaalBank == 0)
-            {
-                BtnHit.IsEnabled = false;
-                BtnStand.IsEnabled = false;
-                BtnDeel.IsEnabled = false;
-                SldrKapitaal.IsEnabled = false;
-
-                MessageBox.Show("Jij hebt het spel gewonnen!", "Start een nieuwe spel!");
-                GridScherm.Visibility = Visibility.Hidden;
-            }
-
-            BtnDeel.IsEnabled = true;
-           
-        }
+        
 
     }
 }
